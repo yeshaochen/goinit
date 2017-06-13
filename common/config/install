@@ -1,0 +1,72 @@
+#install for dns
+dnsutils
+
+libstdc++6
+libbsd-resource-perl
+bzip2
+iptstate
+rsync
+screen
+vim
+iftop
+iotop
+python
+openssh-server
+smem
+pigz
+mtr-tiny
+tcpdump
+sudo
+
+#pstree,killall
+psmisc
+
+#/usr/bin/host
+bind9-host
+
+whois
+
+#install gcc and g++
+gcc
+g++
+
+#for locales
+locales
+
+#for ntp
+ntpdate
+ntp
+
+#sysstat utils for 30sysstat.sh
+sysstat
+
+#tools for developer
+lsof
+telnet
+gdb
+oprofile
+
+#net tools
+ftp
+lftp
+
+#for cacti
+libwww-perl
+
+#hwtool
+dmidecode
+
+#for cpu turbo
+cpufrequtils
+sysfsutils
+
+#for glances
+python-pip
+python-setuptools
+python-dev
+
+#for mysql monitor script
+python-mysqldb
+
+#a small 'net top' tool
+nethogs

@@ -1,0 +1,3 @@
+127.0.0.1   localhost.i.example.com localhost
+$MYIP       $hostname.i.example.com ${shorthostname}
+$MYIP       $hostname.i.example.com.

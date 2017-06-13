@@ -1,0 +1,87 @@
+#!/bin/sh
+# Project: Goinit
+# Version: V0.95
+# Github: https://github.com/yeshaochen/goinit
+# Description: Goinit is Linux system initialization automation tools.
+# Author: yeshaochen
+# Date: 2014-05-18
+
+FUNCTION="`pwd`/function"
+if [ ! -e "$FUNCTION" ]
+then
+    echo "The $FUNCTION file does not exist"
+    exit 1
+fi 
+
+. "$FUNCTION"
+
+check_installed_package whois >/dev/null || aptitude -yy --without-recommends install whois
+
+MYIP=`get_myip`
+NETNAME=`whois ${MYIP} | sed -e '/./{H;$!d;}' -e 'x;/netnum/!d' |grep ^netname | sed -e 's/.*: *\t*\(.*\)/\1/g' | sed -e 's/-.*//g'`
+
+case "$isp" in
+    tel)
+        ISP=1
+        ;;
+    cnc)
+        ISP=2
+        ;;
+    edu)
+        ISP=3
+        ;;
+    bgp)
+        ISP=0
+        ;;
+    *)
+        case "$NETNAME" in
+            CNCGROUP|CNC|UNICOM)
+                echo $NETNAME" Net" 
+                ISP=2
+                ;;
+            CHINANET|CHINATELECOM)
+                echo $NETNAME" Net" 
+                ISP=1
+                ;;
+            *)
+                case "$MYIP" in 
+                    123.58.*|114.113.*|223.252.*)
+                        ISP=0
+                        ;;
+                    220.181.*|115.236.123.*|115.238.*|113.108.225.*)
+                        ISP=1
+                        ;;
+                    123.125.*|101.71.26.*|218.107.*)
+                        ISP=2
+                        ;;
+                    121.195.179.*)
+                        ISP=3
+                        ;;
+                    192.168.*|10.*|172.1[6-9].*|172.2[0-9].*|172.3[0-1].*)
+                        ISP=4
+                        ;;
+                    *) 
+                        echo "Netname is $NETNAME script can not determine the ip in which network"
+                        echo "0.BGP"
+                        echo "1.ChinaNet"
+                        echo "2.CNC"
+                        echo "3.CERNET"
+                        echo "4.Keep the original configuration"
+                        read ISP
+                        case "$ISP" in
+                            0|1|2|3|4)
+                                :
+                                ;;
+                            *)
+                                echo 'Input ISP error'
+                                exit 2
+                                ;;
+                        esac
+                        ;;
+                esac
+                ;;
+        esac
+        ;;
+esac
+
+export ISP MYIP

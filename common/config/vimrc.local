@@ -1,0 +1,36 @@
+" source a basic but very useful config example
+" /usr/share/vim/vimcurrent/vimrc_example.vim
+runtime! vimrc_example.vim
+" we want color to fit a dark background terminal
+set background=dark
+" always show a status line
+" 0 is always not, 1 is show when there's more than one window
+set laststatus=2
+" display the current mode in the status line
+set showmode
+" number of spaces a <Tab> in the text stands for
+set tabstop=4
+" number of spaces used for each step of (auto)indent
+set shiftwidth=4
+" if non-zero, number of spaces to insert for a <Tab>
+set softtabstop=4
+" expand <Tab> to spaces in Insert mode
+set expandtab
+" don't let vim recognize mouse
+" vim's mouse support will make terminal bypass any mouse
+" operations to vim. this is not people want to do.
+" if you really want mouse you can set it
+" in /etc/vim/vimrc.user or ~/.vimrc like this
+" if has('mouse')
+"   set mouse=a
+" endif
+" `set mouse=a' means enable mouse in all modes
+" type `:help mouse' for other possible options
+set mouse=""
+" do not keep a backup file
+set nobackup
+
+" source other settings if you like to add
+if filereadable("/etc/vim/vimrc.user")
+  source /etc/vim/vimrc.user
+endif

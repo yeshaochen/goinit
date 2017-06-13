@@ -1,0 +1,7 @@
+# set apt source.
+deb http://mirrors.163.com/ubuntu wheezy main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu wheezy-updates main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu wheezy-security main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu wheezy main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu wheezy-updates main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu wheezy-security main restricted universe multiverse

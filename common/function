@@ -1,0 +1,187 @@
+#!/bin/sh
+# Project: Goinit
+# Version: V0.95
+# Github: https://github.com/yeshaochen/goinit
+# Description: Goinit is Linux system initialization automation tools.
+# Author: yeshaochen
+# Date: 2014-05-18
+
+BACKUPDIR='/var/goinit/backup'
+
+backup_etc_file() {
+    local etc_file="$1"
+    local destination="${BACKUPDIR}/${etc_file}"
+    trap "restore_etc_file $etc_file;exit 1" 2
+
+    if [ ! -f "${etc_file}" ]
+    then
+        echo "Warning : no file to backup : $etc_file"
+        return 0
+    fi
+
+    mkdir -p "${destination%/*}" || return $?
+
+    echo "Backuping file : $etc_file"
+    if [ -f "$destination" ]
+    then
+        i=3
+        while [ "$i" -ge 0 ]
+        do
+            next=$(($i+1))
+            mv -f "$destination.$i" "$destination.$next" 2>/dev/null
+            i=$(($i-1))
+        done
+        mv -f "$destination" "$destination.0"
+    fi
+    cp -af "$etc_file" "$destination"
+}
+
+restore_etc_file(){
+    local etc_file="$1"
+    local destination="${BACKUPDIR}/${etc_file}"
+    if [ ! -e "$destination" ]
+    then
+        echo "Warning: no file to restore : $destination"
+        return 0
+    fi
+    cp -af "$destination" "$etc_file"
+    if [ "$?" -ne 0 ]
+    then
+        echo "Restore $etc_file error"
+        return 1
+    fi
+}
+
+check_exit(){
+# $1: string to print when got error
+    RETCODE=$?
+    if [ "$RETCODE" -ne 0 ]
+    then
+        if [ -n "$1" ]
+        then
+            echo "$1" >&2
+        fi
+        exit "$RETCODE"
+    fi
+}
+
+check_exit_restore(){
+# $1: file to restore
+# $2: string to print when got error
+    RETCODE=$?
+    if [ "$RETCODE" -ne 0 ]
+    then
+        restore_etc_file "$1"
+        if [ -n "$2" ]
+        then
+            echo "$2" >&2
+        fi
+        exit "$RETCODE"
+    fi
+}
+
+find_device(){
+    local mount_point="$1"
+
+    # Autodetect current root device
+    local device=
+    if [ -f '/etc/fstab' ]
+    then
+        device=`awk -v MP="$mount_point" '/^#/{next};$2==MP{print $1;exit}' /etc/fstab`
+    fi
+
+    if [ -n "$device" ] ; then
+        case "$device" in
+            LABEL=* | UUID=*)
+            device=`readlink -f "$(findfs $device)"`
+            ;;
+        *)
+            device=`readlink -f "$device"`
+            ;;
+        esac
+    fi
+
+    echo "$device"
+}
+
+get_myip(){
+    local device=`netstat -rn | awk '{ if ( $1 == "0.0.0.0" ) print $8 }'`
+    if [ -n "$device" ]
+    then
+        myip=`ifconfig "$device" | awk '{ if ( $1 == "inet" ) { split($2, token, ":") ; print token[2] } }' | head -1`
+        if [ -n "$myip" ]
+        then
+            echo "$myip"
+        fi
+    fi
+}
+
+get_debian_version(){
+    version=`awk -F'[-./_ ]' '{print tolower($1)}' /etc/debian_version`
+    case "$version" in
+        4|etch)
+            echo "etch"
+            ;;
+        5|lenny)
+            echo "lenny"
+            ;;
+        6|squeeze)
+            echo "squeeze"
+            ;;
+        7|wheezy)
+            echo "wheezy"
+            ;;
+        *)
+            echo "$version"
+            ;;
+    esac
+}
+
+check_installed_package(){
+    local pkg="$1"
+    if [ -n "$pkg" ]
+    then
+        local insver=`dpkg -l "$pkg" 2>/dev/null | awk '{ if ( $2 == "'$pkg'" && $1 == "ii" ){print $3;exit}}'`
+        if [ -n "$insver" ]
+        then
+            echo "$insver"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+check_run_status(){
+    local STATUSDIR=/var/goinit/status
+    _name=$1
+    _version=$2
+    _otherarg=$3
+    
+    STATUSFILE=${STATUSDIR}/${_name}-${_version}
+    if [ -f $STATUSFILE ]; then
+        echo $_otherarg | diff - $STATUSFILE > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            echo "yes"
+        else
+            echo "diff"
+        fi
+    else
+        echo "no"
+    fi
+}
+
+update_run_status(){
+    local STATUSDIR=/var/goinit/status
+    _name=$1
+    _version=$2
+    _otherarg=$3
+    
+    STATUSFILE=${STATUSDIR}/${_name}-${_version}
+
+    if [ ! -d $STATUSDIR ]; then
+        mkdir -p "$STATUSDIR" || exit $?
+    fi
+
+    echo $_otherarg > $STATUSFILE
+    return $?
+}

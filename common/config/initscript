@@ -1,0 +1,5 @@
+ulimit -c unlimited
+ulimit -H -n 65535
+ulimit -S -n 65535
+# Execute the program.
+eval exec "$4"

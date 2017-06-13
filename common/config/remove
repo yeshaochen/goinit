@@ -1,0 +1,7 @@
+#remove for dns
+nscd
+
+nfs-common
+
+portmap
+rpcbind

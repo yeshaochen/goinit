@@ -1,0 +1,7 @@
+# set apt source.
+deb http://mirrors.163.com/ubuntu lenny main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu lenny-updates main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu lenny-security main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu lenny main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu lenny-updates main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu lenny-security main restricted universe multiverse

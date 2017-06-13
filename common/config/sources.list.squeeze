@@ -1,0 +1,7 @@
+# set apt source.
+deb http://mirrors.163.com/ubuntu squeeze main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu squeeze-updates main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu squeeze-security main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu squeeze main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu squeeze-updates main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu squeeze-security main restricted universe multiverse
